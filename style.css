@@ -1,0 +1,70 @@
+body {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0; 
+    background-image: url(background.jpg);
+    background-size: cover;
+}
+
+.game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.grid {
+    width: 670px;
+    height: 300px;
+    /* border: solid rgb(214, 159, 39) 1px; */
+    position: relative; /* Ensure absolute positioning works within this container */
+    background-color: rgb(255 255 255 / 30%);
+    backdrop-filter: blur(10px);
+
+}
+
+.block, .user, .ball {
+    position: absolute;
+}
+
+.block {
+    width: 100px;
+    height: 20px;
+    background-color: blue;
+}
+
+.user {
+    width: 100px;
+    height: 20px;
+    background-color: purple;
+}
+
+.ball {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: red;
+}
+
+h1{
+    font-family: "Honk", system-ui;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    font-variation-settings:
+        "MORF" 3,
+        "SHLN" 50;
+    font-size: 50px;
+}
+
+h2, #score{
+    font-family: "Honk", system-ui;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    font-variation-settings:
+      "MORF" 15,
+      "SHLN" 50;
+      font-size: 40px;
+}
