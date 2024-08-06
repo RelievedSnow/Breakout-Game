@@ -10,12 +10,14 @@ let timerId
 let xDirection = -2
 let yDirection = 2
 let score = 0
+let level = 1
+let ballSpeed = 20
 
 const userStart = [280, 10]
 let currentPosition = userStart
 
 const ballStart = [320, 40]
-let ballCurresntPosition = ballStart
+let ballCurrentPosition = ballStart
 
 //create Block 
 class Block {
@@ -28,7 +30,7 @@ class Block {
 }
 
 //all my blocks
-const blocks = [
+let blocks = [
     new Block(10, 270),
     new Block(120, 270),
     new Block(230, 270),
@@ -60,6 +62,12 @@ function addBlocks() {
     }
 }
 
+//clear all blocks
+function clearBlocks(){
+    const allblocks = Array.from(document.querySelectorAll('.block'))
+    allblocks.forEach(block => block.remove())
+}
+
 //add user
 const user = document.createElement('div')
 user.classList.add('user')
@@ -74,8 +82,8 @@ function drawUser() {
 
 //draw the ball
 function drawBall() {
-    ball.style.left = ballCurresntPosition[0] + 'px'
-    ball.style.bottom = ballCurresntPosition[1] + 'px'
+    ball.style.left = ballCurrentPosition[0] + 'px'
+    ball.style.bottom = ballCurrentPosition[1] + 'px'
 }
 
 //move user
@@ -96,6 +104,8 @@ function moveUser(e) {
     }
 }
 
+document.addEventListener('keydown', moveUser)
+
 //add ball
 const ball = document.createElement('div')
 ball.classList.add('ball')
@@ -104,17 +114,64 @@ grid.appendChild(ball)
 
 //move the ball
 function moveBall() {
-    ballCurresntPosition[0] += xDirection
-    ballCurresntPosition[1] += yDirection
+    ballCurrentPosition[0] += xDirection
+    ballCurrentPosition[1] += yDirection
     drawBall()
     checkForCollisions()
 }
 
 function startGame() {
+    resetGame()
     addBlocks()
     document.addEventListener('keydown', moveUser)
-    timerId = setInterval(moveBall, 20)
+    timerId = setInterval(moveBall, ballSpeed)
     startButton.removeEventListener('click', startGame) // Prevent multiple starts
+}
+
+//reset Game
+
+function resetGame(){
+    clearInterval(timerId)
+    clearBlocks()
+    blocks = [
+        new Block(10, 270),
+        new Block(120, 270),
+        new Block(230, 270),
+        new Block(340, 270),
+        new Block(450, 270),
+        new Block(560, 270),
+        new Block(10, 240),
+        new Block(120, 240),
+        new Block(230, 240),
+        new Block(340, 240),
+        new Block(450, 240),
+        new Block(560, 240),
+        new Block(10, 210),
+        new Block(120, 210),
+        new Block(230, 210),
+        new Block(340, 210),
+        new Block(450, 210),
+        new Block(560, 210)
+    ]
+    ballCurrentPosition = ballStart
+    currentPosition = userStart
+    score = 0
+    level = 1
+    ballspeed = 20
+    xDirection = -2
+    yDirection = 2
+    scireDisplay.innerHTML = score
+    drawUser()
+    drawBall()
+}
+
+//next Level
+
+function nextLevel() {
+    level++
+    ballSpeed = Math.max(5, ballSpeed - 3) // Decrease the ballSpeed by 3, but not lower than 5
+    clearInterval(timerId)
+    startGame()
 }
 
 //check collisions
@@ -122,8 +179,8 @@ function checkForCollisions() {
     //check for block collisions
     for (let i = 0; i < blocks.length; i++) {
         if (
-            (ballCurresntPosition[0] > blocks[i].bottomLeft[0] && ballCurresntPosition[0] < blocks[i].bottomRight[0]) &&
-            ((ballCurresntPosition[1] + ballDiameter) > blocks[i].bottomLeft[1] && ballCurresntPosition[1] < blocks[i].topLeft[1])
+            (ballCurrentPosition[0] > blocks[i].bottomLeft[0] && ballCurrentPosition[0] < blocks[i].bottomRight[0]) &&
+            ((ballCurrentPosition[1] + ballDiameter) > blocks[i].bottomLeft[1] && ballCurrentPosition[1] < blocks[i].topLeft[1])
         ) {
             const allBlocks = Array.from(document.querySelectorAll('.block'))
             allBlocks[i].classList.remove('block')
@@ -137,31 +194,34 @@ function checkForCollisions() {
                 scoreDisplay.innerHTML = 'You Win!'
                 clearInterval(timerId)
                 document.removeEventListener('keydown', moveUser)
+                startButton.innerHTML = "Next Level"
+                startButton.addEventListener('click', nextLevel)
             }
         }
     }
 
     //check for wall collisions
-    if (ballCurresntPosition[0] >= (boardWidth - ballDiameter) ||
-        ballCurresntPosition[1] >= (boardHeight - ballDiameter) ||
-        ballCurresntPosition[0] <= 0
+    if (ballCurrentPosition[0] >= (boardWidth - ballDiameter) ||
+        ballCurrentPosition[1] >= (boardHeight - ballDiameter) ||
+        ballCurrentPosition[0] <= 0
     ) {
         changeDirection()
     }
 
     //check for user collisions
     if (
-        (ballCurresntPosition[0] > currentPosition[0] && ballCurresntPosition[0] < currentPosition[0] + blockWidth) &&
-        (ballCurresntPosition[1] > currentPosition[1] && ballCurresntPosition[1] < currentPosition[1] + blockHeight)
+        (ballCurrentPosition[0] > currentPosition[0] && ballCurrentPosition[0] < currentPosition[0] + blockWidth) &&
+        (ballCurrentPosition[1] > currentPosition[1] && ballCurrentPosition[1] < currentPosition[1] + blockHeight)
     ) {
         changeDirection()
     }
 
     //check for game over 
-    if (ballCurresntPosition[1] <= 0) {
+    if (ballCurrentPosition[1] <= 0) {
         clearInterval(timerId)
         scoreDisplay.innerHTML = 'You Lose'
-        document.removeEventListener('keydown', moveUser)
+        startButton.innerHTML = "Restart"
+        startButton.addEventListener('click', startGame)
     }
 }
 
